@@ -33,10 +33,35 @@ class Total extends React.Component {
   render() {
     return (
       <>
-        <h3>Total cash: </h3>
+        <h3>Total cash: ${this.props.total}</h3>
       </>
     )
   }
+}
+
+class ProductForm extends React.Component {
+
+  submit(e) {
+    e.preventDefault();
+    alert('Name: ' + this.refs.name.value + ' $' + this.refs.price.value);
+
+    this.refs.name.value = '';
+    this.refs.price.value = '';
+    
+  }
+
+  render() {
+    return (
+      <form onSubmit={()=> {this.submit()}}>
+        <input type="text" placeholder="Product Name" ref="name"/> -
+        <input type="text" placeholder="Product Price" ref="price"/>
+        <br/><br/>
+        <button>Create product</button>
+        <hr/>
+      </form>
+    );
+  }
+
 }
 
 class ProductList extends React.Component {
@@ -44,38 +69,48 @@ class ProductList extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      total: 0
+      total: 0,
+      productList: [
+        {name: 'Android', price: 158},
+        {name: 'Apple', price: 999},
+        {name: 'SonyEricsson', price: 10}
+      ]
      };
+
+     // https://stackoverflow.com/questions/45998744/react-this-state-is-undefined
+     this.calculateTotal = this.calculateTotal.bind(this);
   }
-/* 
-  getInitialState() {
-    return {
-      total: 0
-    }
-  } */
 
   calculateTotal(price) {
-    this.setState({total: this.state.total + price})
-    alert(this.state.total)
+    this.setState({total: this.state.total + price});
+    alert(price);
   }
 
   showProduct(name) {
-    alert(name)
+    alert(name);
   }
 
+  change() {
+    
+  }
+  
+
   render() {
+    let that = this;
+    let products = this.state.productList.map(function(product) {
+      return (
+        <Product name={product.name} price={product.price} 
+                prodShow = {that.showProduct}
+                totalShow = {that.calculateTotal}/> 
+      );
+    });
+
+
     return (
       <>
-        <Product name='Android' price={158} 
-                prodShow = {() => {this.showProduct()}}
-                totalShow = {() => {this.calculateTotal()}}/>  
-        <Product name='Apple' price={999} 
-                prodShow = {() => {this.showProduct()}}
-                totalShow = {() => {this.calculateTotal()}}/>  
-        <Product name='SonyEricsson' price={10} 
-                prodShow = {() => {this.showProduct()}}
-                totalShow = {() => {this.calculateTotal()}}/>
-        <Total/>  
+        <ProductForm/>
+        <div>{products}</div>
+        <Total total={this.state.total} />  
       </>
     )
     
