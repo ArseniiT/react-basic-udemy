@@ -41,22 +41,45 @@ class Total extends React.Component {
 
 class ProductForm extends React.Component {
 
-  submit(e) {
-    e.preventDefault();
-    alert('Name: ' + this.refs.name.value + ' $' + this.refs.price.value);
+  constructor(props) {
+    super(props);
+    this.state = {name: '', price: ''};
 
-    this.refs.name.value = '';
-    this.refs.price.value = '';
+    this.handleChange = this.handleChange.bind(this);
+    this.handleChangee = this.handleChangee.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+
+    let product = {
+      name: this.state.name,
+      price: this.state.price
+    }
+
+    this.props.handleCreate(product);
+
+    this.state.name = '';
+    this.state.price = '';
     
+  }
+
+  handleChange(event) {
+    this.setState({name: event.target.value});
+  }
+
+  handleChangee(event) {
+    this.setState({price: event.target.value });
   }
 
   render() {
     return (
-      <form onSubmit={()=> {this.submit()}}>
-        <input type="text" placeholder="Product Name" ref="name"/> -
-        <input type="text" placeholder="Product Price" ref="price"/>
+      <form onSubmit={this.handleSubmit}>
+        <input type="text" placeholder="Product Name" value={this.state.name} onChange={this.handleChange} /> -
+        <input type="text" placeholder="Product Price" value={this.state.price} onChange={this.handleChangee}/>
         <br/><br/>
-        <button>Create product</button>
+        <input type="submit" value="Submit" />
         <hr/>
       </form>
     );
@@ -79,6 +102,11 @@ class ProductList extends React.Component {
 
      // https://stackoverflow.com/questions/45998744/react-this-state-is-undefined
      this.calculateTotal = this.calculateTotal.bind(this);
+     this.createProduct = this.createProduct.bind(this);
+  }
+
+  createProduct(product) {
+    this.setState({ productList: this.state.productList.concat(product) });
   }
 
   calculateTotal(price) {
@@ -108,7 +136,7 @@ class ProductList extends React.Component {
 
     return (
       <>
-        <ProductForm/>
+        <ProductForm handleCreate={this.createProduct} />
         <div>{products}</div>
         <Total total={this.state.total} />  
       </>
